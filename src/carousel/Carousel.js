@@ -126,7 +126,7 @@ export default class Carousel extends Component {
         this._scrollOffsetRef = null;
         this._onScrollTriggered = true; // used when momentum is enabled to prevent an issue with edges items
         this._lastScrollDate = 0; // used to work around a FlatList bug
-        this._scrollEnabled = props.scrollEnabled !== false;
+        this._scrollEnabled = props.scrollEnabled === false ? false : true;
 
         this._initPositionsAndInterpolators = this._initPositionsAndInterpolators.bind(this);
         this._renderItem = this._renderItem.bind(this);
@@ -1074,7 +1074,11 @@ export default class Carousel extends Component {
             return;
         }
 
-        this._snapToItem(positionIndex, animated, fireCallback);
+        if (this._needsScrollView()) {
+            this._snapToItem(positionIndex, animated, fireCallback);
+        } else {
+            this._getWrappedRef().scrollToIndex({animated:animated, index:index, viewOffset:0, viewPosition:0});
+        }        
     }
 
     snapToNext (animated = true, fireCallback = true) {
@@ -1196,10 +1200,12 @@ export default class Carousel extends Component {
             sliderHeight / itemHeight :
             sliderWidth / itemWidth) + 1;
         const initialNumPerSide = this._enableLoop() ? loopClonesPerSide : 2;
-        const initialNumToRender = visibleItems + (initialNumPerSide * 2);
-        const maxToRenderPerBatch = 1 + (initialNumToRender * 2);
+        const initialNumToRender = this.props.initialNumToRender || (visibleItems + (initialNumPerSide * 2));
+        const maxToRenderPerBatch = this.props.maxToRenderPerBatch || (1 + (initialNumToRender * 2));
         const windowSize = maxToRenderPerBatch;
 
+        console.log(initialNumToRender)
+        console.log(maxToRenderPerBatch)
         const specificProps = !this._needsScrollView() ? {
             initialNumToRender: initialNumToRender,
             maxToRenderPerBatch: maxToRenderPerBatch,
@@ -1259,7 +1265,7 @@ export default class Carousel extends Component {
             // extraData: this.state,
             renderItem: this._renderItem,
             numColumns: 1,
-            getItemLayout: undefined, // see #193
+            getItemLayout: this.props.getItemLayout || undefined, // see #193
             initialScrollIndex: undefined, // see #193
             keyExtractor: keyExtractor || this._getKeyExtractor
         } : {};
