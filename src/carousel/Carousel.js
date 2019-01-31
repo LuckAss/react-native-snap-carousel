@@ -1074,7 +1074,7 @@ export default class Carousel extends Component {
             return;
         }
 
-        if (this._needsScrollView()) {
+        if (this._needsScrollView() || !this.props.getItemLayout) {
             this._snapToItem(positionIndex, animated, fireCallback);
         } else {
             this._getWrappedRef().scrollToIndex({animated:animated, index:index, viewOffset:0, viewPosition:0});
@@ -1200,12 +1200,10 @@ export default class Carousel extends Component {
             sliderHeight / itemHeight :
             sliderWidth / itemWidth) + 1;
         const initialNumPerSide = this._enableLoop() ? loopClonesPerSide : 2;
-        const initialNumToRender = this.props.initialNumToRender || (visibleItems + (initialNumPerSide * 2));
-        const maxToRenderPerBatch = this.props.maxToRenderPerBatch || (1 + (initialNumToRender * 2));
+        const initialNumToRender = this.props.initialNumToRender == undefined ? (visibleItems + (initialNumPerSide * 2)) : this.props.initialNumToRender;
+        const maxToRenderPerBatch = this.props.maxToRenderPerBatch == undefined ? (1 + (initialNumToRender * 2)) : this.props.maxToRenderPerBatch;
         const windowSize = maxToRenderPerBatch;
 
-        console.log(initialNumToRender)
-        console.log(maxToRenderPerBatch)
         const specificProps = !this._needsScrollView() ? {
             initialNumToRender: initialNumToRender,
             maxToRenderPerBatch: maxToRenderPerBatch,
