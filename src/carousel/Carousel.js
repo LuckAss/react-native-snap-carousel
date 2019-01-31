@@ -1070,7 +1070,7 @@ export default class Carousel extends Component {
 
         const positionIndex = this._getPositionIndex(index);
 
-        if (positionIndex === this._activeItem) {
+        if (positionIndex === this._activeItem && (this._needsScrollView() || !this.props.getItemLayout)) {
             return;
         }
 
