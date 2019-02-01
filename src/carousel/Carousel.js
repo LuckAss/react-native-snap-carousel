@@ -1077,6 +1077,7 @@ export default class Carousel extends Component {
         if (this._needsScrollView() || !this.props.getItemLayout) {
             this._snapToItem(positionIndex, animated, fireCallback);
         } else {
+            this._activeItem = index
             this._getWrappedRef().scrollToIndex({animated:animated, index:index, viewOffset:0, viewPosition:0});
         }        
     }
